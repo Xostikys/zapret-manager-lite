@@ -12827,7 +12827,7 @@ _zm_update_fetch() {
 	_zm_gh_get "$ZM_SCRIPT_URL" "$1" || { echo "не удалось скачать установщик с GitHub — ни напрямую, ни через WARP"; return 1; }
 	head -n1 "$1" | grep -qx '#!/bin/sh' || { echo "скачанный файл не похож на установщик (возможно, вместо него пришла страница-заглушка)"; return 1; }
 	grep -q '^# Version:' "$1" || { echo "в установщике нет номера версии"; return 1; }
-	tail -n 5 "$1" | grep -q 'панель LuCI:' || { echo "установщик скачался не полностью — попробуйте ещё раз"; return 1; }
+	tail -n 5 "$1" | grep -q 'Web UI:' || { echo "установщик скачался не полностью — попробуйте ещё раз"; return 1; }
 	sh -n "$1" 2>/dev/null || { echo "установщик повреждён — установка отменена"; return 1; }
 	return 0
 }
@@ -12875,7 +12875,7 @@ do_zm_update() {
 	[ -f "$ZM_STATE_DIR/ui.ram" ] && read -r m < "$ZM_STATE_DIR/ui.ram"
 	[ "$m" = tmp ] && { arg=ram; echo "   · Панель стоит в оперативной памяти — новая версия тоже встанет в память"; }
 	echo "==> Запускаем установку — панель на полминуты пропадёт"
-	( sleep 5; sh "$tmp" $arg >/tmp/zm_update_install.log 2>&1; rm -f "$tmp" ) >/dev/null 2>&1 </dev/null &
+	( sleep 5; if sh "$tmp" $arg >/tmp/zm_update_install.log 2>&1; then sh /etc/zm-local-ui/after-update.sh >>/tmp/zm_update_install.log 2>&1; fi; rm -f "$tmp" ) >/dev/null 2>&1 </dev/null &
 	return 0
 }
 ZM_INSTALLER_EOF

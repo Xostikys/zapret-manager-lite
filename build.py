@@ -2,6 +2,12 @@ from pathlib import Path
 import io, tarfile, gzip, base64, hashlib
 root=Path(__file__).resolve().parent
 src=root/'src'
+for directory in ['src','vendor']:
+ for f in (root/directory).rglob('*'):
+  if f.is_symlink() or not f.is_file() or f.parent!=root/directory:
+   raise ValueError('Only flat regular source files allowed: '+str(f))
+  if not all(c.isascii() and (c.isalnum() or c in '._-') for c in f.name):
+   raise ValueError('Unsafe source name: '+str(f))
 (src/'PACKAGE.sha256').write_text(''.join(hashlib.sha256(f.read_bytes()).hexdigest()+'  '+f.relative_to(src).as_posix()+'\n' for f in sorted(src.rglob('*')) if f.is_file() and f.name!='PACKAGE.sha256'),encoding='utf-8',newline='\n')
 data=io.BytesIO()
 with tarfile.open(fileobj=data,mode='w',format=tarfile.USTAR_FORMAT) as tar:

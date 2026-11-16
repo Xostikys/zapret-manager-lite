@@ -1,10 +1,15 @@
 import { readfile, writefile } from 'fs';
+let known = json(readfile('known-functions.json'));
 function cutfn(s, name, stub) {
     let start = index(s, '\n' + name + '() {\n');
     if (start < 0) return s;
     let tail = substr(s, start + 1), end = index(tail, '\n}\n');
     assert(end >= 0, 'Unknown function layout: ' + name);
-    return substr(s, 0, start + 1) + stub + substr(tail, end + 3);
+    let body = substr(tail, 0, end + 3);
+    assert(body == known[name], 'Updated function needs review: ' + name);
+    let result = substr(s, 0, start + 1) + stub + substr(tail, end + 3);
+    assert(index(result, '\n' + name + '() {\n') < 0, 'Duplicate function: ' + name);
+    return result;
 }
 let plan = json(readfile('plan.json'));
 for (let i = 0; i < length(plan); i++) {
@@ -21,6 +26,24 @@ for (let i = 0; i < length(plan); i++) {
     let lines = split(s, '\n'), out = [];
     for (let j = 0; j < length(lines); j++) {
         let line = lines[j];
+        // Keep the one-shot process alive until cleanup finishes. It uses the
+        // addon stored outside the upstream installation, then patches the new
+        // updater too. Unrecognised future updater layouts stay untouched.
+        if (p.kind == 'shell') {
+            let before = '( sleep 5; sh "$tmp" $arg >/tmp/zm_update_install.log 2>&1; rm -f "$tmp" )';
+            let after = '( sleep 5; if sh "$tmp" $arg >/tmp/zm_update_install.log 2>&1; then sh /etc/zm-local-ui/after-update.sh >>/tmp/zm_update_install.log 2>&1; fi; rm -f "$tmp" )';
+            line = join(after, split(line, before));
+        }
+        // Upstream uses this text as an installer completeness sentinel.
+        // It is protocol data, not a visible label. Repair older local rewrites
+        // and preserve the original check, including its failure handling.
+        if (p.kind == 'shell' && index(line, 'tail -n 5 "$1" | grep -q ') >= 0) {
+            line = join("grep -q 'Web UI:'", split(line, "grep -q 'панель LuCI:'"));
+            if (index(line, "grep -q 'Web UI:'") >= 0) {
+                push(out, line);
+                continue;
+            }
+        }
         if (match(line, /^webui\(\) \{ _zmL/) ||
             match(line, /^\s*webui\)/) ||
             index(line, 'json_add_object "webui"') >= 0 ||

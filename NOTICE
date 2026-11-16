@@ -13,3 +13,5 @@ Zapret Manager and is distributed by its authors under their own licenses.
 
 Local modifications: ad-free LuCI presentation, reduced motion and periodic UI cleanup.
 Local modification sources: src/. Installer in vendor/ modified: separate frontend payload, listener setup and enable/disable RPC removed; visible text restricted to LuCI.
+
+Local modifications Copyright 2026 Xostikys

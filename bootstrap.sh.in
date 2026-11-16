@@ -4,12 +4,12 @@
 set -eu
 [ "$(id -u)" = 0 ] || { echo 'Run as root on OpenWrt'; exit 1; }
 [ -f /etc/openwrt_release ] || { echo 'OpenWrt required'; exit 1; }
-for cmd in awk base64 sha256sum tar; do command -v "$cmd" >/dev/null || { echo "Missing $cmd"; exit 1; }; done
+for cmd in awk base64 sha256sum tar mktemp; do command -v "$cmd" >/dev/null || { echo "Missing $cmd"; exit 1; }; done
 umask 077
 temp_dir=$(mktemp -d /tmp/zm-lite-install.XXXXXX)
 cleanup() {
  case "$temp_dir" in /tmp/zm-lite-install.??????)
-  rm -f "$temp_dir"/payload/src/* "$temp_dir"/payload/vendor/* "$temp_dir/archive.tar.gz"
+  rm -f "$temp_dir"/payload/src/* "$temp_dir"/payload/vendor/* "$temp_dir/archive.tar.gz" "$temp_dir/members" "$temp_dir/types"
   rmdir "$temp_dir/payload/src" "$temp_dir/payload/vendor" "$temp_dir/payload" "$temp_dir" 2>/dev/null || true ;;
  esac
 }
@@ -17,6 +17,14 @@ trap cleanup EXIT
 trap 'exit 1' HUP INT TERM
 awk '/^__ZM_LITE_PAYLOAD__$/ { found=1; next } found { print }' "$0" | base64 -d > "$temp_dir/archive.tar.gz"
 printf '%s  %s\n' '@PAYLOAD_SHA256@' "$temp_dir/archive.tar.gz" | sha256sum -c - >/dev/null
+tar -tzf "$temp_dir/archive.tar.gz" > "$temp_dir/members"
+tar -tvzf "$temp_dir/archive.tar.gz" > "$temp_dir/types"
+awk 'substr($0,1,1) != "-" { bad=1 } END { exit bad }' "$temp_dir/types" || { echo 'Non-regular payload member'; exit 1; }
+while IFS= read -r member; do
+ case "$member" in payload/src/*|payload/vendor/*) ;; *) echo 'Invalid payload path'; exit 1;; esac
+ name=${member#payload/}; name=${name#*/}
+ case "$name" in ''|.|..|*[!a-zA-Z0-9_.-]*) echo 'Invalid payload name'; exit 1;; esac
+done < "$temp_dir/members"
 tar -xzf "$temp_dir/archive.tar.gz" -C "$temp_dir"
 if [ -f /opt/zapret-manager-luci/backend.sh ]; then
  echo 'Existing Manager detected: applying local UI modification to current version.'

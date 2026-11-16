@@ -1,0 +1,27 @@
+{
+  "environment": "Windows: real shell/tar; ucode, UCI, permissions, service reloads modeled",
+  "result": "PASS",
+  "scope": [
+    "install",
+    "repeat/no writes",
+    "cron/menu preservation",
+    "private UCI",
+    "restore listener/assets",
+    "dry-run",
+    "auto stable observation",
+    "unknown template reject",
+    "restore newer-file reject",
+    "write/reload failure rollback",
+    "SIGKILL recovery",
+    "working config preservation"
+  ],
+  "shell_syntax_files": 11,
+  "generated_js_modules": 21,
+  "browser": "PASS light/dark, controls, privacy blur, unchanged outside LuCI styles",
+  "resource_guard": "PASS model low/adequate/missing MemAvailable",
+  "payload": "PASS source parity, SHA256, paths/types, LF and attribution",
+  "job_guard": "PASS status tasks allowed, mutating task deferred",
+  "compatibility_no_stat": "PASS metadata guard: root accepted; nonroot/group-write/other-write/malformed refused; stat not invoked",
+  "update_marker": "PASS real upstream 5.085 accepted; truncated installer refused; old local marker repaired",
+  "after_update_hook": "PASS success/order/args; failure/disable guards; cleanup failure logged"
+}
