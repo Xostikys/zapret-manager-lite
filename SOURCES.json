@@ -8,6 +8,6 @@
   "vendor_installer_sha256": "a1396a354ec7a3050d3fce9835121da7dbeb3a77455deb9ff0a1fcae7ea00271",
   "vendor_modified": true,
   "edition": "0.4.0",
-  "device_validation": "Revision 3 installed and reported working by user on Cudy WR3000S v1 ubootmod, OpenWrt 25.12.4; revision 4 not device-tested",
+  "device_validation": "Revisions 3 and 4 installation/application confirmed by user on Cudy WR3000S v1 ubootmod, OpenWrt 25.12.4, Manager 5.085. Future update hook and all runtime functions not fully device-tested.",
   "manager_update_policy": "fast upstream main; direct HTTPS official raw GitHub, no third-party mirror for Manager installer"
 }

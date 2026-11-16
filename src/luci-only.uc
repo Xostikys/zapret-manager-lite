@@ -15,6 +15,18 @@ let plan = json(readfile('plan.json'));
 for (let i = 0; i < length(plan); i++) {
     let p = plan[i], s = readfile('old/' + p.id);
     assert(type(s) == 'string', 'Cannot read component');
+    if (p.kind == 'js' && index(s, 'draft.yacd') >= 0 && index(s, 'function renderPanel()') >= 0) {
+        let panel = known.forkozz_panel_js;
+        let hidden = 'function renderPanel() { /* zm-local-ui: separate panel removed */ }';
+        assert(type(panel) == 'string', 'Missing known Forkozz panel template');
+        if (index(s, hidden) < 0) {
+            assert(index(s, panel) >= 0, 'Unknown Forkozz panel layout; review required');
+            s = join(hidden, split(s, panel));
+            assert(index(s, 'panes.set.appendChild(panelCard);') >= 0, 'Unknown Forkozz panel placement');
+            s = join('', split(s, 'panes.set.appendChild(panelCard);'));
+        }
+        assert(index(s, 'Веб-панель (Zashboard)') < 0 && index(s, ':9090/ui/') < 0, 'Separate panel controls remain');
+    }
     if (p.kind == 'shell') {
         // Multiline implementation is removed before dispatch/forwarder lines.
         s = cutfn(s, 'webui', '');

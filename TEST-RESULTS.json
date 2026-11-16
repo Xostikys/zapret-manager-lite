@@ -19,10 +19,13 @@
     "preserved first snapshot"
   ],
   "edition": "0.4.0",
-  "device": "User confirms revision 3 works on Cudy WR3000S v1 ubootmod / OpenWrt 25.12.4. Revision 4 not yet device-tested.",
+  "device": "User confirms revision 3 operation and revision 4 installation/UI application on Cudy WR3000S v1 ubootmod / OpenWrt 25.12.4 / Manager 5.085; subsequent Manager update and full runtime checks remain pending.",
   "named_listeners": "PASS original and custom named legacy listeners removed together; custom port; main/other sections preserved",
   "backup_integrity": "PASS first snapshot unchanged by later apply; corrupted latest archive refused before live writes",
   "direct_manager_fetch": "PASS actual 5.085 content accepted; HTML/truncated/network failure refused; HTTPS/no insecure/no mirror flags; private temporary files cleaned. curl transport mocked.",
   "update_hook": "PASS success/order/args, installer-failure/disabled guards, cleanup-failure logging",
-  "source_5085": "PASS UI and component transforms, shell/JSON/JS syntax"
+  "source_5085": "PASS UI and component transforms, shell/JSON/JS syntax",
+  "optional_api_local": "PASS shell model install/repeat/remove, fw4/nft/probe failure rollback, changed-rule guards; nft kernel validation deferred to target",
+  "forkozz_ui": "PASS quick syntax and idempotency on known 5.085 source: separate panel block/placement removed; no heavy runtime tests",
+  "optional_api_local_device": "User supplied a failed TCP connection to LAN port 9090 from PC after restriction; complete rule/application log and LuCI functionality not supplied."
 }
