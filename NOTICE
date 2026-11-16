@@ -15,3 +15,6 @@ Local modifications: ad-free LuCI presentation, reduced motion and periodic UI c
 Local modification sources: src/. Installer in vendor/ modified: separate frontend payload, listener setup and enable/disable RPC removed; visible text restricted to LuCI.
 
 Local modifications Copyright 2026 Xostikys
+
+Revision 4: direct HTTPS Manager updater, verified backups, first snapshot,
+recognized legacy listener cleanup and local security inventory.

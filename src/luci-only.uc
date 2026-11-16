@@ -30,6 +30,8 @@ for (let i = 0; i < length(plan); i++) {
         // addon stored outside the upstream installation, then patches the new
         // updater too. Unrecognised future updater layouts stay untouched.
         if (p.kind == 'shell') {
+            line = join('sh /etc/zm-local-ui/fetch-manager.sh "$1" ||', split(line, '_zm_gh_get "$ZM_SCRIPT_URL" "$1" ||'));
+            line = join('не удалось скачать установщик напрямую с GitHub; обновление отменено', split(line, 'не удалось скачать установщик с GitHub — ни напрямую, ни через WARP'));
             let before = '( sleep 5; sh "$tmp" $arg >/tmp/zm_update_install.log 2>&1; rm -f "$tmp" )';
             let after = '( sleep 5; if sh "$tmp" $arg >/tmp/zm_update_install.log 2>&1; then sh /etc/zm-local-ui/after-update.sh >>/tmp/zm_update_install.log 2>&1; fi; rm -f "$tmp" )';
             line = join(after, split(line, before));

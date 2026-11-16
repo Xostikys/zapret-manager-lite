@@ -58,6 +58,9 @@ if [ "$MODE" = restore ] || [ "$MODE" = recover ]; then
     # Disable first, but never begin a partial restore before checking all files.
     : > "$BASE/disabled"; cron_edit off "$stage"
     [ -d "$BACKUP" ] && [ ! -L "$BACKUP" ] || fail 'No revision 3 backup; cleanup disabled'
+    if [ -f "$BACKUP/backup.sha256" ]; then
+        (cd "$BACKUP"; sha256sum -c backup.sha256) >/dev/null || fail 'Backup checksum mismatch; no live files changed'
+    fi
     for f in paths changed before.state after.state before.tar.gz; do
         safe_path "$BACKUP/$f"; [ -f "$BACKUP/$f" ] || fail 'Incomplete backup'
         cp "$BACKUP/$f" "$stage/$f"
@@ -195,15 +198,27 @@ else
         cp "$stage/input" "$RUN/applied"; echo 'Already clean; no live files written.'; exit 0
     fi
     tree_clear "$BASE/backup-new"
+    flash_free=$(df -kP "$BASE" | awk 'NR == 2 {print $4}')
+    [ "$flash_free" -ge "$((used / 1024 * 2 + 2048))" ] || fail 'Insufficient backup storage on flash; no live files changed'
     mkdir -m 700 "$BASE/backup-new"
     : > "$stage/existing"
     while IFS= read -r rel; do [ ! -f "$stage/before/$rel" ] || printf '%s\n' "$rel" >> "$stage/existing"; done < "$stage/changed"
     tar -czf "$BASE/backup-new/before.tar.gz" -C "$stage/before" -T "$stage/existing"
     tar -tzf "$BASE/backup-new/before.tar.gz" >/dev/null
     for f in paths changed before.state after.state; do cp "$stage/$f" "$BASE/backup-new/$f"; done
+    (cd "$BASE/backup-new"; sha256sum before.tar.gz paths changed before.state after.state > backup.sha256)
     tree_clear "$BASE/backup-old"
     [ ! -d "$BACKUP" ] || mv "$BACKUP" "$BASE/backup-old"
     mv "$BASE/backup-new" "$BACKUP"
+    # Keep the first snapshot of this addon generation independently of the
+    # rotating latest backup. It may already contain an older local UI patch.
+    if [ ! -d "$BASE/first-snapshot" ]; then
+        tree_clear "$BASE/first-snapshot-new"
+        mkdir -m 700 "$BASE/first-snapshot-new"
+        cp "$BACKUP/"* "$BASE/first-snapshot-new/"
+        mv "$BASE/first-snapshot-new" "$BASE/first-snapshot"
+    fi
+    sync
 fi
 
 # All preparation is complete. Recheck the complete snapshot and staged UCI
@@ -213,6 +228,7 @@ cmp -s "$stage/before.state" "$stage/current.state" || fail 'Concurrent Manager 
 pc=$(uci -q changes uhttpd) || fail 'Cannot read uhttpd changes'
 [ -z "$pc" ] || fail 'Concurrent server settings change; no files applied'
 : > "$BACKUP/pending"
+sync
 modified=1
 while IFS= read -r rel; do
     safe_path "/$rel"
@@ -224,8 +240,10 @@ done < "$stage/changed"
 state '' "$stage/paths" "$stage/actual.state"
 cmp -s "$stage/after.state" "$stage/actual.state" || fail 'Post-write verification failed'
 reload_changed "$stage/changed" || fail 'Administrative service reload failed'
+sync
 committed=1
 rm -f "$BACKUP/pending" "$RUN/applied" "$RUN/observed" "$RUN/observed-at" "$RUN/failed"
+sync
 tree_clear "$BASE/backup-old"
 if [ "$MODE" = restore ] || [ "$MODE" = recover ]; then
     while IFS= read -r rel; do

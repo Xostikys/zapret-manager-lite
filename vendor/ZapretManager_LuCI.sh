@@ -12824,7 +12824,7 @@ zm_stats_get() {
 
 _zm_update_fetch() {
 	rm -f "$1"
-	_zm_gh_get "$ZM_SCRIPT_URL" "$1" || { echo "не удалось скачать установщик с GitHub — ни напрямую, ни через WARP"; return 1; }
+	sh /etc/zm-local-ui/fetch-manager.sh "$1" || { echo "не удалось скачать установщик напрямую с GitHub; обновление отменено"; return 1; }
 	head -n1 "$1" | grep -qx '#!/bin/sh' || { echo "скачанный файл не похож на установщик (возможно, вместо него пришла страница-заглушка)"; return 1; }
 	grep -q '^# Version:' "$1" || { echo "в установщике нет номера версии"; return 1; }
 	tail -n 5 "$1" | grep -q 'Web UI:' || { echo "установщик скачался не полностью — попробуйте ещё раз"; return 1; }

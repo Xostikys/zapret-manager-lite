@@ -5,8 +5,9 @@
   "existing_installation": "never downgraded/reinstalled by default",
   "observed_existing_version": "5.083, UI patch applied by user",
   "license": "Apache-2.0",
-  "vendor_installer_sha256": "cb2315da16c639b52114158231e765d09bcc6ce6582444008428d297e8c27ad4",
+  "vendor_installer_sha256": "a1396a354ec7a3050d3fce9835121da7dbeb3a77455deb9ff0a1fcae7ea00271",
   "vendor_modified": true,
-  "edition": "LuCI only, revision 3 (transactional cleanup)",
-  "device_validation": "Revision 3 not yet tested on physical router"
+  "edition": "0.4.0",
+  "device_validation": "Revision 3 installed and reported working by user on Cudy WR3000S v1 ubootmod, OpenWrt 25.12.4; revision 4 not device-tested",
+  "manager_update_policy": "fast upstream main; direct HTTPS official raw GitHub, no third-party mirror for Manager installer"
 }

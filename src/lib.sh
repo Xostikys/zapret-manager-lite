@@ -115,7 +115,7 @@ put_file() {
 }
 tree_clear() {
     # Only our freshly created private tree. Never call against a live tree.
-    case "$1" in "$RUN"/stage.??????|"$BASE"/backup-new|"$BASE"/backup-old) ;; *) return 1;; esac
+    case "$1" in "$RUN"/stage.??????|"$BASE"/backup-new|"$BASE"/backup-old|"$BASE"/first-snapshot-new) ;; *) return 1;; esac
     [ ! -L "$1" ] || return 1
     [ ! -d "$1" ] || { find "$1" -type f -exec rm -f '{}' \; && find "$1" -depth -type d -exec rmdir '{}' \;; }
 }

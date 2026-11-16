@@ -2,7 +2,7 @@
 set -eu
 cd "$(dirname "$0")"
 [ "$(id -u)" = 0 ] || { echo 'Run as root'; exit 1; }
-for c in ucode crontab sha256sum cmp tar xargs ls mktemp uci awk sort find; do
+for c in ucode crontab sha256sum cmp tar xargs ls mktemp uci awk sort find sync; do
     command -v "$c" >/dev/null || { echo "Missing $c; nothing installed"; exit 1; }
 done
 sha256sum -c PACKAGE.sha256 >/dev/null
@@ -28,8 +28,8 @@ printf '%s\n' "$tmp" > "$RUN/lock/stage"
 # Disable the old three-command cron job before replacing any addon code.
 cron_edit off "$tmp"
 : > "$BASE/disabled"
-printf '%s\n' 'zm-local-ui revision 3' > "$BASE/owner-zm-local-ui"
-for n in lib.sh apply.sh listener.sh after-update.sh tick.sh ensure-luci.sh luci-only.sh transform.uc luci-only.uc \
+printf '%s\n' 'zm-local-ui revision 4' > "$BASE/owner-zm-local-ui"
+for n in lib.sh apply.sh listener.sh after-update.sh fetch-manager.sh security-report.sh tick.sh ensure-luci.sh luci-only.sh transform.uc luci-only.uc \
     lite.css fragments.json known-functions.json credits-head.js credits-tail.js restore.sh memory-report.sh; do
     safe_path "$BASE/$n"
     cp "$n" "$tmp/$n"; chmod 600 "$tmp/$n"; mv -f "$tmp/$n" "$BASE/$n"

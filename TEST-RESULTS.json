@@ -13,15 +13,16 @@
     "restore newer-file reject",
     "write/reload failure rollback",
     "SIGKILL recovery",
-    "working config preservation"
+    "working config preservation",
+    "named listener and alternate port",
+    "backup corruption refusal",
+    "preserved first snapshot"
   ],
-  "shell_syntax_files": 11,
-  "generated_js_modules": 21,
-  "browser": "PASS light/dark, controls, privacy blur, unchanged outside LuCI styles",
-  "resource_guard": "PASS model low/adequate/missing MemAvailable",
-  "payload": "PASS source parity, SHA256, paths/types, LF and attribution",
-  "job_guard": "PASS status tasks allowed, mutating task deferred",
-  "compatibility_no_stat": "PASS metadata guard: root accepted; nonroot/group-write/other-write/malformed refused; stat not invoked",
-  "update_marker": "PASS real upstream 5.085 accepted; truncated installer refused; old local marker repaired",
-  "after_update_hook": "PASS success/order/args; failure/disable guards; cleanup failure logged"
+  "edition": "0.4.0",
+  "device": "User confirms revision 3 works on Cudy WR3000S v1 ubootmod / OpenWrt 25.12.4. Revision 4 not yet device-tested.",
+  "named_listeners": "PASS original and custom named legacy listeners removed together; custom port; main/other sections preserved",
+  "backup_integrity": "PASS first snapshot unchanged by later apply; corrupted latest archive refused before live writes",
+  "direct_manager_fetch": "PASS actual 5.085 content accepted; HTML/truncated/network failure refused; HTTPS/no insecure/no mirror flags; private temporary files cleaned. curl transport mocked.",
+  "update_hook": "PASS success/order/args, installer-failure/disabled guards, cleanup-failure logging",
+  "source_5085": "PASS UI and component transforms, shell/JSON/JS syntax"
 }

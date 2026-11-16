@@ -1,6 +1,6 @@
-# Публикация редакции 3
+# Публикация редакции 4
 
-1. Распакуйте zapret-manager-lite-luci-only-v3.zip.
+1. Распакуйте zapret-manager-lite-0.4.0.zip.
 2. Загрузите его содержимое в Xostikys/zapret-manager-lite с заменой файлов.
    Сохраните папки src, vendor и tests. Сам ZIP в корень вместо исходников не подходит.
 3. README содержит команду установки. Она получает ту версию install.sh,
