@@ -1,0 +1,9 @@
+{
+  "upstream": "https://github.com/StressOzz/Zapret-Manager",
+  "commit": "e827c60a8e479b1733d1b9f3e1786fdebb457922",
+  "installer_version": "5.081",
+  "existing_installation": "never downgraded/reinstalled by default",
+  "observed_existing_version": "5.083, UI patch applied by user",
+  "license": "Apache-2.0",
+  "vendor_installer_sha256": "47a0f994edd84abf2b9139c56d1cdf838868060e1dccb30c0af34225dbadd19a"
+}

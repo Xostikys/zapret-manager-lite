@@ -1,0 +1,30 @@
+#!/bin/sh
+# Zapret Manager Lite: original Manager + local LuCI-only modifications.
+# Source/license: vendor/, src/, LICENSE and NOTICE in the same repository.
+set -eu
+[ "$(id -u)" = 0 ] || { echo 'Run as root on OpenWrt'; exit 1; }
+[ -f /etc/openwrt_release ] || { echo 'OpenWrt required'; exit 1; }
+for cmd in awk base64 sha256sum tar; do command -v "$cmd" >/dev/null || { echo "Missing $cmd"; exit 1; }; done
+umask 077
+temp_dir=$(mktemp -d /tmp/zm-lite-install.XXXXXX)
+cleanup() {
+ case "$temp_dir" in /tmp/zm-lite-install.??????)
+  rm -f "$temp_dir"/payload/src/* "$temp_dir"/payload/vendor/* "$temp_dir/archive.tar.gz"
+  rmdir "$temp_dir/payload/src" "$temp_dir/payload/vendor" "$temp_dir/payload" "$temp_dir" 2>/dev/null || true ;;
+ esac
+}
+trap cleanup EXIT
+trap 'exit 1' HUP INT TERM
+awk '/^__ZM_LITE_PAYLOAD__$/ { found=1; next } found { print }' "$0" | base64 -d > "$temp_dir/archive.tar.gz"
+printf '%s  %s\n' '@PAYLOAD_SHA256@' "$temp_dir/archive.tar.gz" | sha256sum -c - >/dev/null
+tar -xzf "$temp_dir/archive.tar.gz" -C "$temp_dir"
+if [ -f /opt/zapret-manager-luci/backend.sh ]; then
+ echo 'Existing Manager detected: applying local UI modification to current version.'
+else
+ echo 'Installing bundled original Manager 5.081 in flash mode, then local UI modification.'
+ echo 'Zapret/Forkozz engine installation and configuration are managed separately in LuCI.'
+ sh "$temp_dir/payload/vendor/ZapretManager_LuCI.sh" flash
+fi
+sh "$temp_dir/payload/src/install.sh"
+echo 'Zapret Manager Lite installed. Open LuCI -> Services -> Zapret Manager; Ctrl+F5.'
+exit 0

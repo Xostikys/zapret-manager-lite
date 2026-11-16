@@ -1,0 +1,45 @@
+/* ZM-LOCAL-UI-BEGIN v1 */
+/* Scoped to the manager. Status colours, progress fills and privacy blur remain. */
+html:root:root body :is([class^="zm-"], [class*=" zm-"]),
+html:root:root body :is([class^="zm-"], [class*=" zm-"]) *,
+html:root:root body :is([class^="zm-"], [class*=" zm-"])::before,
+html:root:root body :is([class^="zm-"], [class*=" zm-"])::after,
+html:root:root body :is([class^="zm-"], [class*=" zm-"]) *::before,
+html:root:root body :is([class^="zm-"], [class*=" zm-"]) *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    will-change: auto !important;
+}
+html:root:root body :is(.zm-wrap, .zm-card, .zm-fo-card, .zm-node,
+    .zm-st-stat, .zm-awg-if, .zm-svc, .zm-dom-panel, .zm-doh-fold-panel,
+    .zm-tg-link-card, .zm-tg-link-box, .zm-log, .zm-config-editor,
+    .zm-seg-item, .zm-strat-btn, .zm-tile, .zm-zc-part, .zm-ow-chip,
+    .zm-ts-cmd, .zm-tsc-box, .zm-tsc-login) {
+    background: transparent !important;
+    color: inherit !important;
+    border-color: rgba(127,127,127,.35) !important;
+}
+html:root:root body :is(.zm-active, [aria-checked="true"].zm-seg-item) {
+    border-color: #2ea043 !important;
+    outline-color: #2ea043 !important;
+}
+html:root:root body :is(.zm-card, .zm-node, .zm-svc):hover {
+    transform: none !important;
+}
+/* Floating controls keep a readable surface matching native/system colours. */
+html:root:root body :is(.zm-savebar, .zm-toast, .zm-dialog, .zm-find,
+    .zm-wn, .zm-reboot-box, .zm-mon-xtip) {
+    background: var(--background-color-high, Canvas) !important;
+    color: var(--text-color, CanvasText) !important;
+}
+html:root:root body .zm-header-links,
+html:root:root body .zm-sp-pay,
+html:root:root body .zm-kv-go,
+html:root:root body .zm-webui-link {
+    display: none !important;
+}
+/* ZM-LOCAL-UI-END */
