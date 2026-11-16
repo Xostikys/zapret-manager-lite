@@ -12,4 +12,4 @@ Zapret Manager downloads, installs and configures third-party software
 Zapret Manager and is distributed by its authors under their own licenses.
 
 Local modifications: ad-free LuCI presentation, reduced motion and periodic UI cleanup.
-Local modification sources: src/. Original installer in vendor/ is unmodified.
+Local modification sources: src/. Installer in vendor/ modified: separate frontend payload, listener setup and enable/disable RPC removed; visible text restricted to LuCI.

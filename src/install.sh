@@ -11,17 +11,18 @@ if [ -e "$BASE" ] && [ ! -f "$BASE/owner-zm-local-ui" ]; then echo 'Installation
 mkdir -p "$BASE"
 umask 077
 printf '%s\n' 'zm-local-ui v1' > "$BASE/owner-zm-local-ui"
-for n in tick.sh transform.uc lite.css fragments.json credits-head.js credits-tail.js restore.sh memory-report.sh; do
+for n in tick.sh transform.uc lite.css fragments.json credits-head.js credits-tail.js restore.sh memory-report.sh luci-only.sh luci-only.uc; do
  [ ! -L "$BASE/$n" ] || exit 1
  cp "$n" "$BASE/$n.new"; chmod 600 "$BASE/$n.new"; mv "$BASE/$n.new" "$BASE/$n"
 done
 rm -f "$BASE/disabled"
 sh "$BASE/tick.sh" apply
+sh "$BASE/luci-only.sh"
 tmp=$(mktemp -d /tmp/zm-local-cron.XXXXXX)
 trap 'rm -f "$tmp/old" "$tmp/new" "$tmp/now"; rmdir "$tmp" 2>/dev/null || true' EXIT
 if ! crontab -l > "$tmp/old" 2>/dev/null; then [ ! -e /etc/crontabs/root ] || exit 1; fi
 grep -v ' # zm-local-ui$' "$tmp/old" > "$tmp/new" || true
-printf '%s\n' '*/5 * * * * sh /etc/zm-local-ui/tick.sh auto >/dev/null 2>&1 # zm-local-ui' >> "$tmp/new"
+printf '%s\n' '*/5 * * * * sh /etc/zm-local-ui/tick.sh auto >/dev/null 2>&1 && sh /etc/zm-local-ui/luci-only.sh auto >/dev/null 2>&1 # zm-local-ui' >> "$tmp/new"
 if ! crontab -l > "$tmp/now" 2>/dev/null; then [ ! -e /etc/crontabs/root ] || exit 1; fi
 cmp -s "$tmp/old" "$tmp/now" || { echo 'Crontab changed concurrently; UI applied but auto-reapply not installed. Retry installer.'; exit 1; }
 crontab "$tmp/new"

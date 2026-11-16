@@ -13,6 +13,17 @@ crontab "$tmp/new"
 : > "$BASE/disabled"
 mkdir /var/lock/zm-ui-cleanup 2>/dev/null || { echo 'Auto-reapply disabled; UI cleanup is busy. Retry rollback.'; exit 1; }
 trap 'rmdir /var/lock/zm-ui-cleanup 2>/dev/null || true; rm -f "$tmp/old" "$tmp/new" "$tmp/now" "$tmp/list"; rmdir "$tmp" 2>/dev/null || true' EXIT
+if [ -f "$BASE/components-before.tar.gz" ]; then
+ (cd /; sha256sum -c "$BASE/components-after.sha256") >/dev/null || { echo 'Components changed since migration; automatic cleanup disabled, no older components restored.'; exit 1; }
+ tar -tzf "$BASE/components-before.tar.gz" > "$tmp/list"
+ while IFS= read -r p; do
+  case "$p" in *..*|/*) exit 1;; esac
+  case "$p" in opt/zapret-manager-luci/backend.sh|opt/zapret-manager-luci/mod/system.sh|usr/libexec/rpcd/zapret-manager|usr/share/rpcd/acl.d/luci-app-zapret-manager.json|www/luci-static/resources/zapret-manager/common.js|www/luci-static/resources/view/zapret-manager/*.js) ;;
+  *) echo 'Unexpected component backup member'; exit 1;; esac
+ done < "$tmp/list"
+ tar -xzf "$BASE/components-before.tar.gz" -C /
+ /etc/init.d/rpcd reload
+fi
 [ -f "$BASE/before.tar.gz" ] && [ ! -L "$BASE/before.tar.gz" ] || { echo 'Auto-reapply disabled; no backup available'; exit 1; }
 # Refuse to overwrite a newer manager version with an older UI backup.
 actual=$({ for p in /usr/share/luci/menu.d/luci-app-zapret-manager.json /www/luci-static/resources/view/zapret-manager/style.css /www/luci-static/resources/view/zapret-manager/dashboard.js /www/luci-static/resources/view/zapret-manager/system.js /www/luci-static/resources/view/zapret-manager/thanks.js /www/zm/app.js /www/zm/app.css /www/zm-webui.html; do

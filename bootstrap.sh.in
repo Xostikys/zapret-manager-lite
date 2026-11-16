@@ -21,7 +21,7 @@ tar -xzf "$temp_dir/archive.tar.gz" -C "$temp_dir"
 if [ -f /opt/zapret-manager-luci/backend.sh ]; then
  echo 'Existing Manager detected: applying local UI modification to current version.'
 else
- echo 'Installing bundled original Manager 5.081 in flash mode, then local UI modification.'
+ echo 'Installing bundled LuCI-only Manager 5.081 in flash mode, then local UI modification.'
  echo 'Zapret/Forkozz engine installation and configuration are managed separately in LuCI.'
  sh "$temp_dir/payload/vendor/ZapretManager_LuCI.sh" flash
 fi

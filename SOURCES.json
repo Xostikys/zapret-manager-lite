@@ -5,5 +5,7 @@
   "existing_installation": "never downgraded/reinstalled by default",
   "observed_existing_version": "5.083, UI patch applied by user",
   "license": "Apache-2.0",
-  "vendor_installer_sha256": "47a0f994edd84abf2b9139c56d1cdf838868060e1dccb30c0af34225dbadd19a"
+  "vendor_installer_sha256": "2b4ac3785bf7eb11eb201f8fffd5fa6ddf20f5895b6500fd58a6a8497b079465",
+  "vendor_modified": true,
+  "edition": "LuCI only, revision 2"
 }
